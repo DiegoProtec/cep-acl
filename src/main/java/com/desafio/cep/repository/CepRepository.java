@@ -1,0 +1,47 @@
+package com.desafio.cep.repository;
+
+import com.desafio.cep.dominio.Cep;
+import com.desafio.cep.dominio.CepDocument;
+import com.desafio.cep.exception.negocio.NegocioException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@ApplicationScoped
+public class CepRepository extends CepDocument {
+
+    @Inject
+    DynamoDbClient dynamoDbClient;
+
+    public void save(Cep cep) {
+        try {
+            dynamoDbClient.putItem(putRequest(cep));
+        } catch (DynamoDbException e) {
+            throw new NegocioException("Error ao persistir o CEP: " + cep, e);
+        }
+    }
+
+    public Optional<Cep> findByKey(String cep) {
+        try {
+            var response = dynamoDbClient.getItem(getRequest(cep));
+            if (response.hasItem()) {
+                return Optional.of(Cep.from(response.item()));
+            } else {
+                return Optional.empty();
+            }
+        } catch (DynamoDbException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<Cep> findAll() {
+        return dynamoDbClient.scanPaginator(scanRequest()).items().stream()
+                .map(Cep::from)
+                .collect(Collectors.toList());
+    }
+}

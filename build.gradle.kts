@@ -13,12 +13,25 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
+    implementation(enforcedPlatform("${quarkusPlatformGroupId}:quarkus-amazon-services-bom:${quarkusPlatformVersion}"))
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
+
+    // Quarkus
     implementation("io.quarkus:quarkus-rest")
     implementation("io.quarkus:quarkus-rest-client")
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-rest-client-jackson")
+
+    // AWS - dynamo
+    implementation("io.quarkiverse.amazonservices:quarkus-amazon-dynamodb")
+    implementation("software.amazon.awssdk:url-connection-client:2.31.25")
+
+    // MapStruct dependencies
+    implementation("org.mapstruct:mapstruct:1.5.3.Final")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+
+    // Test
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }

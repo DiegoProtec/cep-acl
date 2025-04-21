@@ -10,6 +10,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.List;
+
 @Path("/cep")
 public class CepResource {
 
@@ -22,6 +24,12 @@ public class CepResource {
     public Response buscaCep(@PathParam("cep") String cep) {
         CepVo cepVo = cepService.buscar(cep);
         return Response.ok(cepVo).build();
+    }
+
+    @GET
+    public Response listarCeps() {
+        List<CepVo> ceps = cepService.buscar();
+        return Response.ok(ceps).build();
     }
 
 }
