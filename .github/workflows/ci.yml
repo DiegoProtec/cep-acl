@@ -57,7 +57,7 @@ jobs:
 
       - name: Deploy
         run: |
-          aws s3 cp "quarkus-run.jar" s3://elasticbeanstalk-$ELASTIC_REGION-${{ secrets.AWS_ACCOUNT_ID }}/artifact/$ELASTIC_BEANSTALK_NAME/
-          aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{github.run_id}} --description ${{github.run_id}} --source-bundle S3Bucket="elasticbeanstalk-$ELASTIC_REGION-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="artifact/$ELASTIC_BEANSTALK_NAME/quarkus-run.jar"
+          aws s3 cp "quarkus-run.jar" s3://elasticbeanstalk-${{ ELASTIC_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}/artifact/${{ ELASTIC_BEANSTALK_NAME }}/
+          aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{github.run_id}} --description ${{github.run_id}} --source-bundle S3Bucket="elasticbeanstalk-${{ ELASTIC_REGION }}-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="artifact/${{ ELASTIC_BEANSTALK_NAME }}/quarkus-run.jar"
           aws elasticbeanstalk update-environment --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME --version-label ${{github.run_id}}
           aws elasticbeanstalk wait environment-updated --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME
