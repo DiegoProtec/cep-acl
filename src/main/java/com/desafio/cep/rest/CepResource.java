@@ -2,6 +2,7 @@ package com.desafio.cep.rest;
 
 import com.desafio.cep.application.CepService;
 import com.desafio.cep.dominio.CepVo;
+import com.desafio.exception.negocio.NegocioException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -21,7 +22,7 @@ public class CepResource {
     @GET
     @Path("/{cep}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response buscaCep(@PathParam("cep") String cep) {
+    public Response buscaCep(@PathParam("cep") String cep) throws NegocioException {
         CepVo cepVo = cepService.buscar(cep);
         return Response.ok(cepVo).build();
     }

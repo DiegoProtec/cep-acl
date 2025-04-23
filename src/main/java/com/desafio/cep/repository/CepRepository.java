@@ -2,7 +2,6 @@ package com.desafio.cep.repository;
 
 import com.desafio.cep.dominio.Cep;
 import com.desafio.cep.dominio.CepDocument;
-import com.desafio.exception.negocio.NegocioException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
@@ -22,13 +21,13 @@ public class CepRepository extends CepDocument {
     @Inject
     DynamoDbClient dynamoDbClient;
 
-    public void save(Cep cep) {
+    public Optional<Cep> save(Cep cep) {
         try {
             dynamoDbClient.putItem(putRequest(cep));
+            return findByKey(cep.getCep());
         } catch (DynamoDbException e) {
-            var mensagemError = "DYNAMODB: Error ao persistir o CEP: " + cep;
-            LOG.error(mensagemError, e);
-            throw new NegocioException(mensagemError, e.getCause());
+            LOG.error("Error ao persistir o CEP: {}", cep, e);
+            return Optional.empty();
         }
     }
 
@@ -41,8 +40,7 @@ public class CepRepository extends CepDocument {
                 return Optional.empty();
             }
         } catch (DynamoDbException e) {
-            var mensagemError = "DYNAMODB: Error ao buscar o CEP: " + cep;
-            LOG.error(mensagemError, e.getCause());
+            LOG.error("Error ao buscar o CEP: {}", cep, e);
             return Optional.empty();
         }
     }
