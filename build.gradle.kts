@@ -22,6 +22,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-rest-client-jackson")
+    implementation("io.quarkus:quarkus-hibernate-validator")
 
     // AWS - dynamo
     implementation("io.quarkiverse.amazonservices:quarkus-amazon-dynamodb")
@@ -34,6 +35,10 @@ dependencies {
     // Test
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
+
+    // Geral
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("software.amazon.awssdk:secretsmanager:2.31.26")
 }
 
 group = "com.desafio"
