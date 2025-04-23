@@ -28,7 +28,7 @@ public class CepResource {
 
     @GET
     public Response listarCeps() {
-        List<CepVo> ceps = cepService.buscar();
+        List<CepVo> ceps = cepService.buscarTodos();
         return Response.ok(ceps).build();
     }
 
