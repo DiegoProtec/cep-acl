@@ -14,9 +14,9 @@ public class CustomConfigSource implements ConfigSource {
     public CustomConfigSource() {
         var secret = AmazonSecretsManagerConfig.getDynamoDBSecret();
         secret.ifPresent(desafioDB -> {
-            properties.put("DYNAMODB_REGION", desafioDB.regiao());
-            properties.put("DYNAMODB_ACCESS_KEY", desafioDB.accessKey());
-            properties.put("DYNAMODB_SECRET_ACCESS_KEY", desafioDB.secretAccessKey());
+            properties.put("AWS_REGION", desafioDB.regiao());
+            properties.put("AWS_ACCESS_KEY_ID", desafioDB.accessKey());
+            properties.put("AWS_SECRET_ACCESS_KEY", desafioDB.secretAccessKey());
         });
     }
 
