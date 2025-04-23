@@ -2,7 +2,7 @@ package com.desafio.cep.repository;
 
 import com.desafio.cep.dominio.Cep;
 import com.desafio.cep.dominio.CepDocument;
-import com.desafio.cep.exception.negocio.NegocioException;
+import com.desafio.exception.negocio.NegocioException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
