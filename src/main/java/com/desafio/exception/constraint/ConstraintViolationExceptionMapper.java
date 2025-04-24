@@ -1,8 +1,10 @@
 package com.desafio.exception.constraint;
 
-import com.desafio.exception.ValidationError;
+import com.desafio.exception.ErrorResponse;
+import com.desafio.exception.ExceptionResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
@@ -15,16 +17,19 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {
-        List<ValidationError> errors = exception.getConstraintViolations().stream().map(this::mapToValidationError).collect(Collectors.toList());
-        return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse("Erro de validação", errors)).build();
+        List<ErrorResponse> errors = exception.getConstraintViolations()
+                .stream()
+                .map(this::mapToValidationError)
+                .collect(Collectors.toList());
+
+        ExceptionResponse exceptionResponse = new ExceptionResponse(errors);
+        return Response.status(Response.Status.BAD_REQUEST).entity(exceptionResponse).type(MediaType.APPLICATION_JSON).build();
     }
 
-    private ValidationError mapToValidationError(ConstraintViolation<?> violation) {
+    private ErrorResponse mapToValidationError(ConstraintViolation<?> violation) {
         String propertyPath = violation.getPropertyPath().toString();
         String field = propertyPath.contains(".") ? propertyPath.substring(propertyPath.lastIndexOf(".") + 1) : propertyPath;
-        return new ValidationError(field, violation.getMessage());
+        return new ErrorResponse(field, violation.getMessage());
     }
-}
 
-record ErrorResponse(String message, List<ValidationError> errors) {
 }

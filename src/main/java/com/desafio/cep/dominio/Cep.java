@@ -1,6 +1,7 @@
 package com.desafio.cep.dominio;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.ws.rs.NotFoundException;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
@@ -25,8 +26,9 @@ public class Cep {
             cep.setBairro(item.get(CepDocument.CEP_BAIRRO_COL).s());
             cep.setLocalidade(item.get(CepDocument.CEP_LOCALIDADE_COL).s());
             cep.setEstado(item.get(CepDocument.CEP_ESTADO_COL).s());
+            return cep;
         }
-        return cep;
+        throw new NotFoundException("item não encontrado");
     }
 
     public String getCep() {
