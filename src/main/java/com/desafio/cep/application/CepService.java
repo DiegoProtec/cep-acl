@@ -73,6 +73,11 @@ public class CepService {
             Response response = client.buscaCep(cep);
             return response.readEntity(CepVo.class);
         } catch (ProcessingException e) {
+            if (e.getCause() instanceof UnknownHostException) {
+                var mensagem = "Falha na comunicação com a API ViaCep";
+                LOG.error(mensagem, e.getCause());
+                throw new InternalServerErrorException(mensagem);
+            }
             var mensagem = "O serviço ViaCep não encontrou o CEP: " + cep;
             LOG.error(mensagem, e.getCause());
             throw new NotFoundException(mensagem);
