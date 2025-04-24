@@ -1,4 +1,4 @@
-package com.desafio.util;
+package com.desafio.exception;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

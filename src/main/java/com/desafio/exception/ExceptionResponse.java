@@ -1,7 +1,6 @@
 package com.desafio.exception;
 
 import com.desafio.exception.negocio.NegocioException;
-import com.desafio.util.Evento;
 import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.NotFoundException;
 
