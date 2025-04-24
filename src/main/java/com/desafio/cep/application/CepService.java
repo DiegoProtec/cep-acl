@@ -1,6 +1,7 @@
 package com.desafio.cep.application;
 
 import com.desafio.cep.client.ViaCepClient;
+import com.desafio.cep.dominio.Cep;
 import com.desafio.cep.dominio.CepMapper;
 import com.desafio.cep.dominio.CepVo;
 import com.desafio.cep.repository.CepRepository;
@@ -38,18 +39,17 @@ public class CepService {
             @NotBlank(message = "O CEP é obrigatório")
             @Pattern(regexp = "\\d{8}", message = "CEP deve ter 8 dígitos")
             String cep) throws NegocioException {
+        Optional<Cep> optCep = cepRepository.findByKey(cep);
+        if (optCep.isPresent())
+            return CepMapper.INSTANCE.toVo(optCep.get());
 
-        return cepRepository.findByKey(cep)
-                .map(CepMapper.INSTANCE::toVo)
-                .orElseGet(() -> buscarViaCep(cep));
-    }
+        Optional<CepVo> optCepVo = buscaCepApi(cep);
+        if (optCepVo.isPresent()) {
+            cepRepository.save(CepMapper.INSTANCE.toDocument(optCepVo.get()));
+            return optCepVo.get();
+        }
 
-    private CepVo buscarViaCep(String cep) {
-        return buscaCepApi(cep)
-                .map(CepMapper.INSTANCE::toDocument)
-                .flatMap(cepRepository::save)
-                .map(CepMapper.INSTANCE::toVo)
-                .orElseThrow(() -> new NegocioException("Error ao consultar o CEP: " + cep));
+        throw new NegocioException("Error ao consultar o CEP: " + cep);
     }
 
     private Optional<CepVo> buscaCepApi(String cep) {
