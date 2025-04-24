@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -40,7 +41,8 @@ public class CepRepository extends CepDocument {
     public Cep findByKey(String cep) {
         try {
             GetItemResponse response = dynamoDbClient.getItem(getRequest(cep));
-            return Cep.from(response.item());
+            return Cep.from(response.item())
+                    .orElseThrow(NotFoundException::new);
         } catch (NotFoundException | ResourceNotFoundException e) {
             var mensagem = "Não foi encontrado na base de dados o CEP: " + cep;
             LOG.error(mensagem, e.getCause());
@@ -57,7 +59,10 @@ public class CepRepository extends CepDocument {
             return dynamoDbClient.scanPaginator(scanRequest())
                     .items().stream()
                     .map(Cep::from)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .collect(Collectors.toList());
+
         } catch (ResourceNotFoundException e) {
             LOG.error("Não foi encontrado registros na tabela CEP", e.getCause());
             return List.of();

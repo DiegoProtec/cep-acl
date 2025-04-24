@@ -1,10 +1,10 @@
 package com.desafio.cep.dominio;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.ws.rs.NotFoundException;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RegisterForReflection
 public class Cep {
@@ -18,17 +18,17 @@ public class Cep {
     public Cep() {
     }
 
-    public static Cep from(Map<String, AttributeValue> item) {
-        Cep cep = new Cep();
-        if (item != null && !item.isEmpty()) {
-            cep.setCep(item.get(CepDocument.CEP_KEY).s());
-            cep.setLogradouro(item.get(CepDocument.CEP_LOGRADOURO_COL).s());
-            cep.setBairro(item.get(CepDocument.CEP_BAIRRO_COL).s());
-            cep.setLocalidade(item.get(CepDocument.CEP_LOCALIDADE_COL).s());
-            cep.setEstado(item.get(CepDocument.CEP_ESTADO_COL).s());
-            return cep;
-        }
-        throw new NotFoundException("item não encontrado");
+    public static Optional<Cep> from(Map<String, AttributeValue> item) {
+        if (item == null || item.isEmpty())
+            return Optional.empty();
+
+        var cep = new Cep();
+        cep.setCep(item.get(CepDocument.CEP_KEY).s());
+        cep.setLogradouro(item.get(CepDocument.CEP_LOGRADOURO_COL).s());
+        cep.setBairro(item.get(CepDocument.CEP_BAIRRO_COL).s());
+        cep.setLocalidade(item.get(CepDocument.CEP_LOCALIDADE_COL).s());
+        cep.setEstado(item.get(CepDocument.CEP_ESTADO_COL).s());
+        return Optional.of(cep);
     }
 
     public String getCep() {
