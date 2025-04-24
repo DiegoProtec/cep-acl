@@ -64,11 +64,11 @@ public class CepRepository extends CepDocument {
                     .collect(Collectors.toList());
 
         } catch (ResourceNotFoundException e) {
-            LOG.error("Não foi encontrado registros na tabela CEP", e.getCause());
+            LOG.error("Não foi encontrado registros na tabela CEP", e);
             return List.of();
         } catch (Exception e) {
             var mensagem = "Falha na comunicação com a base de dados";
-            LOG.error(mensagem, e.getCause());
+            LOG.error(mensagem, e);
             throw new InternalServerErrorException(mensagem);
         }
     }
