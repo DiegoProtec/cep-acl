@@ -1,4 +1,4 @@
-package com.desafio.exception.badrequest;
+package com.desafio.exception.notfound;
 
 import com.desafio.exception.ExceptionResponse;
 import jakarta.ws.rs.NotFoundException;
