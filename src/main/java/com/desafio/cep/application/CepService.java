@@ -43,20 +43,20 @@ public class CepService {
             @NotBlank(message = "O CEP é obrigatório")
             @Pattern(regexp = "\\d{8}", message = "CEP deve ter exatamente 8 dígitos")
             String cep) {
+        CepVo cepVo;
         try {
             Cep cepDocument = cepRepository.findByKey(cep);
-            return CepMapper.INSTANCE.toVo(cepDocument);
+            cepVo = CepMapper.INSTANCE.toVo(cepDocument);
         } catch (NotFoundException e) {
-            CepVo cepVo = viaCepBuscar(cep);
+            cepVo = viaCepBuscar(cep);
             salvar(cepVo);
-            return cepVo;
-        } catch (InternalServerErrorException e) {
-            throw e;
         } catch (Exception e) {
+            if (e.getCause() instanceof InternalServerErrorException) throw e;
             var mensagem = "Ocorreu uma falha interna ao buscar o CEP: " + cep;
             LOG.error(mensagem, e.getCause());
             throw new InternalServerErrorException(mensagem);
         }
+        return cepVo;
     }
 
     public List<CepVo> buscarTodos() {
