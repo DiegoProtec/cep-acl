@@ -10,6 +10,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,10 @@ public class CepService {
     CepRepository cepRepository;
 
     public List<CepVo> buscarTodos() {
-        return cepRepository.findAll().stream()
+        List<Cep> lista = cepRepository.findAll();
+        if (lista.isEmpty()) return List.of();
+
+        return lista.stream()
                 .map(CepMapper.INSTANCE::toVo)
                 .collect(Collectors.toList());
     }
@@ -39,6 +45,7 @@ public class CepService {
             @NotBlank(message = "O CEP é obrigatório")
             @Pattern(regexp = "\\d{8}", message = "CEP deve ter 8 dígitos")
             String cep) throws NegocioException {
+
         Optional<Cep> optCep = cepRepository.findByKey(cep);
         if (optCep.isPresent())
             return CepMapper.INSTANCE.toVo(optCep.get());
@@ -54,10 +61,17 @@ public class CepService {
 
     private Optional<CepVo> buscaCepApi(String cep) {
         try {
-            return Optional.of(client.buscaCep(cep));
+            CepVo cepVo;
+            try (Response response = client.buscaCep(cep)) {
+                cepVo = response.readEntity(CepVo.class);
+            }
+            return Optional.of(cepVo);
+        } catch (ProcessingException e) {
+            LOG.error("A API ViaCep retornou vazio");
+            throw new NegocioException("O CEP: " + cep + " não existe na base de dados da API Via Cep");
         } catch (Exception e) {
-            LOG.error("Error ao buscar o CEP: {}", cep, e);
-            return Optional.empty();
+            LOG.error("Error na chamada da API");
+            throw new InternalServerErrorException("Falha ao chamar API Via CEP");
         }
     }
 

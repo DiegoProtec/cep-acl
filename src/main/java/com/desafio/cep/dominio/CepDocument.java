@@ -36,9 +36,9 @@ public abstract class CepDocument {
                 .build();
     }
 
-    protected GetItemRequest getRequest(String name) {
+    protected GetItemRequest getRequest(String cep) {
         Map<String, AttributeValue> key = new HashMap<>();
-        key.put(CEP_KEY, AttributeValue.builder().s(name).build());
+        key.put(CEP_KEY, AttributeValue.builder().s(cep).build());
 
         return GetItemRequest.builder()
                 .tableName(CEP_TABLE_NAME)

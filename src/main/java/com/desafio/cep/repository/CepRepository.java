@@ -21,13 +21,11 @@ public class CepRepository extends CepDocument {
     @Inject
     DynamoDbClient dynamoDbClient;
 
-    public Optional<Cep> save(Cep cep) {
+    public void save(Cep cep) {
         try {
             dynamoDbClient.putItem(putRequest(cep));
-            return findByKey(cep.getCep());
         } catch (DynamoDbException e) {
             LOG.error("Error ao persistir o CEP: {}", cep, e);
-            return Optional.empty();
         }
     }
 
@@ -46,8 +44,14 @@ public class CepRepository extends CepDocument {
     }
 
     public List<Cep> findAll() {
-        return dynamoDbClient.scanPaginator(scanRequest()).items().stream()
-                .map(Cep::from)
-                .collect(Collectors.toList());
+        try {
+            return dynamoDbClient.scanPaginator(scanRequest())
+                    .items().stream()
+                    .map(Cep::from)
+                    .collect(Collectors.toList());
+        } catch (DynamoDbException e) {
+            LOG.error("Error ao listar CEP");
+            return List.of();
+        }
     }
 }
