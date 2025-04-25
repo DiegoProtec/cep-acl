@@ -38,6 +38,7 @@ dependencies {
 
     // Geral
     implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("software.amazon.awssdk:secretsmanager:2.31.26")
 
 }
 
